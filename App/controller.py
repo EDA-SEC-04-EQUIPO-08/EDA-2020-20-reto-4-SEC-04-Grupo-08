@@ -130,6 +130,13 @@ def getPublicityRoute(analyzer,cat):
     lst = model.getPublicityRoute(analyzer,cat)
     size = model.lstSize(lst)
     return (lst,size)
+   
+def getStationName(analyzer,stationId):
+    """
+    Obtiene el nombre de una estacion a partir de su Id
+    """
+    name = model.getStationName(analyzer,stationId)
+    return name
 
 def totalStations(analyzer):
     """
