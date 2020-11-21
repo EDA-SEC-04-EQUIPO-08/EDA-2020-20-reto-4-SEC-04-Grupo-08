@@ -72,6 +72,9 @@ def loadFiles(analyzer,totalFiles):
         if filename.endswith('.csv'):
             print('Cargando archivo: ' + filename)
             loadTrips(analyzer, filename)
+    print("Cargando información extra...")
+    model.findPopulars(analyzer)
+    model.findPopularsAdd(analyzer)
     return analyzer
 
 # ___________________________________________________
@@ -93,6 +96,40 @@ def verticesSCC(analyzer, station1, station2):
     if present1 and present2:
         ans = model.sameCC(analyzer, station1, station2)
     return ans
+
+def getCriticStation(analyzer):
+    """
+    Retorna las tres estaciones mas populares 
+    en llegadas, salidas y las poco visitadas
+    """
+    mayIn = model.getRankMay(analyzer,"in")
+    mayOut=model.getRankMay(analyzer,"out")
+    less=model.getRankMen(analyzer,"LessPopular")
+    return (mayIn,mayOut,less)
+
+def getRecommendedRoute(analyzer,cat):
+    """
+    Retorna las estaciones más donde la
+    categoria indicada inicia mas viajes,
+    donde más los termina y la ruta entre
+    ellos 
+    """
+    inStat,outStat,route = model.getRecommendedRoute(analyzer,cat)
+    if route is not None:
+        strRoute = model.convertQueueToStr(route)
+    else:
+        strRoute = "No hay una ruta entre las dos estaciones" 
+    return (inStat,outStat,strRoute)
+
+def getPublicityRoute(analyzer,cat):
+    """
+    Retorna las estaciones donde la es
+    indicado poner pubilicad para un 
+    gurpo de edad
+    """
+    lst = model.getPublicityRoute(analyzer,cat)
+    size = model.lstSize(lst)
+    return (lst,size)
 
 def totalStations(analyzer):
     """
@@ -120,3 +157,4 @@ def stationInGraph(analyzer, stationId):
     if not present:
         print("La estacion "+stationId+" no se encuentra registrada")
     return present
+
