@@ -106,28 +106,37 @@ def optionFive():
         first,second,third = mayIn
         print("Las 3 estaciones Top de llegada son: \n")
         num,stat = first
+        stat = controller.getStationName(analyzer,stat)
         print("1. "+stat+ " con "+str(num)+" llegadas")
         num2,stat2 = second
+        stat2 = controller.getStationName(analyzer,stat2)
         print("2. "+stat2+ " con "+str(num2)+" llegadas")
         num3,stat3 = third
+        stat3 = controller.getStationName(analyzer,stat3)
         print("3. "+stat3+ " con "+str(num3)+" llegadas\n")
 
         first2,second2,third2 = mayOut
         print("Las 3 estaciones Top de salida son: \n")
         num4,stat4 = first2
+        stat4 = controller.getStationName(analyzer,stat4)
         print("1. "+stat4+ " con "+str(num4)+" salidas")
         num5,stat5 = second2
+        stat5 = controller.getStationName(analyzer,stat5)
         print("2. "+stat5+ " con "+str(num5)+" salidas")
         num6,stat6 = third2
+        stat6 = controller.getStationName(analyzer,stat6)
         print("3. "+stat6+ " con "+str(num6)+" salidas\n")
 
         print("Las 3 estaciones menos visitadas son: ")
         first3,second3,third3 = less
         num7,stat7 = first3
+        stat7 = controller.getStationName(analyzer,stat7)
         print("1. "+stat7+ " con "+str(num7)+" visitas")
         num8,stat8 = second3
+        stat8 = controller.getStationName(analyzer,stat8)
         print("2. "+stat8+ " con "+str(num8)+" visitas")
         num9,stat9 = third3
+        stat9 = controller.getStationName(analyzer,stat9)
         print("3. "+stat9+ " con "+str(num9)+" visitas\n")
     except:
         print("Hubo un error en la busqueda")
