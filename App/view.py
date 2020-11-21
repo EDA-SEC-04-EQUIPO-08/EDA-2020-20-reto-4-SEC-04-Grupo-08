@@ -28,6 +28,7 @@ import sys
 import config
 from App import controller
 from DISClib.ADT import stack
+from DISClib.DataStructures import listiterator as it
 import timeit
 assert config
 
@@ -94,23 +95,111 @@ def optionThree():
         else:
             print("Los ID tienen que ser un numero natural, intente con entradas diferentes")
     except:
-            print("Hubo un error en la busqueda")
+        print("Hubo un error en la busqueda")
 
 def optionFour():
     pass
 
 def optionFive():
-    pass
+    try:
+        mayIn,mayOut,less = controller.getCriticStation(analyzer)
+        first,second,third = mayIn
+        print("Las 3 estaciones Top de llegada son: \n")
+        num,stat = first
+        print("1. "+stat+ " con "+str(num)+" llegadas")
+        num2,stat2 = second
+        print("2. "+stat2+ " con "+str(num2)+" llegadas")
+        num3,stat3 = third
+        print("3. "+stat3+ " con "+str(num3)+" llegadas\n")
 
+        first2,second2,third2 = mayOut
+        print("Las 3 estaciones Top de salida son: \n")
+        num4,stat4 = first2
+        print("1. "+stat4+ " con "+str(num4)+" salidas")
+        num5,stat5 = second2
+        print("2. "+stat5+ " con "+str(num5)+" salidas")
+        num6,stat6 = third2
+        print("3. "+stat6+ " con "+str(num6)+" salidas\n")
+
+        print("Las 3 estaciones menos visitadas son: ")
+        first3,second3,third3 = less
+        num7,stat7 = first3
+        print("1. "+stat7+ " con "+str(num7)+" visitas")
+        num8,stat8 = second3
+        print("2. "+stat8+ " con "+str(num8)+" visitas")
+        num9,stat9 = third3
+        print("3. "+stat9+ " con "+str(num9)+" visitas\n")
+    except:
+        print("Hubo un error en la busqueda")
+        
 def optionSix():
     pass
 
 def optionSeven():
-    pass
+    try:
+        if (cat.isdigit()) and (int(cat)>0) and (int(cat)<8):
+            inStat,outStat,strRoute = controller.getRecommendedRoute(analyzer,int(cat))
+            numIn,statIn = inStat
+            numOut,statOut = outStat
+            print("La estacion donde las personas del rango de edad más llegan es la "+ statIn+ " con "+str(numIn)+ " llegadas.")
+            print("La estacion donde las personas del rango de edad más salen es la "+ statOut+ " con "+str(numOut)+ " salidas.")
+            if "-" in strRoute:
+                print("La ruta más corta para llegar de " +statOut+" a "+statIn+" es "+strRoute+"\n")
+            else:
+                print(strRoute)
+        else:
+            print("La categoria ingresada debe ser un numero natural entre 1 y 7")
+    except:
+        print("Hubo un error en la busqueda")
+    
+
+def optionNine():
+    try:
+        if (cat.isdigit()) and (int(cat)>0) and (int(cat)<8):
+            catLst,size = controller.getPublicityRoute(analyzer,int(cat))
+            routeIterator = it.newIterator(catLst)
+            ite = 1
+            if size > 2:
+                print("Las rutas que son las más adecuadas para publicidad dentro del rango de edad ingresado son:\n")
+            else:
+                print("La ruta que es la más adecuada para publicidad dentro del rango de edad ingresado es:\n")
+            while it.hasNext(routeIterator) and (ite<size):
+                routeTup = it.next(routeIterator)
+                num,route = routeTup
+                if num == 0:
+                    print("No hay viajes registrados que cumplan con los requisitos en ese grupo de edad")
+                else:
+                    print("La ruta "+route+" con "+str(num)+" veces realizada.")
+                ite +=1
+            total = it.next(routeIterator)
+            print("\nHubo "+str(total)+" viajes hechos por personas del rango de edad ingresado que tienen suscripción de 3 días")   
+        else:
+            print("La categoria ingresada debe ser un numero natural entre 1 y 7")
+    except:
+        print("Hubo un error en la busqueda")
+
+def categorias():
+    print("Escoja la categoria de edad a la cual pertenece:\n")
+    print("1-(0-10)")
+    print("2-(11-20)")
+    print("3-(21-30)")
+    print("4-(31-40)")
+    print("5-(41-50)")
+    print("6-(51-60)")
+    print("7-(60+)\n")
+    cat = input("Ingrese el numero de su categoria:")
+    return cat
+
+def archivosCargados():
+    if analyzer is None:
+        return False
+    else:
+        return True
 
 """
 Menu principal
 """
+analyzer = None
 while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n>')
@@ -122,30 +211,51 @@ while True:
         print("\nAnalizador iniciado con exito")
 
     elif int(inputs[0]) == 2:
-        executiontime = timeit.timeit(optionTwo, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        if archivosCargados():
+            executiontime = timeit.timeit(optionTwo, number=1)
+            print("Tiempo de ejecución: " + str(executiontime))
+        else:
+            print("Se necesita tener el analizador inicializado antes de ejecutar esta opción")
 
     elif int(inputs[0]) == 3:
-        id1 = input('Ingrese el ID de la primera estacion: ' )
-        id2 = input('Ingrese el ID de la segunda estacion: ' )
-        executiontime = timeit.timeit(optionThree, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        if archivosCargados():
+            id1 = input('Ingrese el ID de la primera estacion: ' )
+            id2 = input('Ingrese el ID de la segunda estacion: ' )
+            executiontime = timeit.timeit(optionThree, number=1)
+            print("Tiempo de ejecución: " + str(executiontime))
+        else:
+            print("Se necesita tener el analizador inicializado antes de ejecutar esta opción")
 
     elif int(inputs[0]) == 4:
         executiontime = timeit.timeit(optionFour, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 5:
-        executiontime = timeit.timeit(optionFive, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        if archivosCargados():
+            executiontime = timeit.timeit(optionFive, number=1)
+            print("Tiempo de ejecución: " + str(executiontime))
+        else:
+            print("Se necesita tener el analizador inicializado antes de ejecutar esta opción")
 
     elif int(inputs[0]) == 6:
         executiontime = timeit.timeit(optionSix, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 7:
-        executiontime = timeit.timeit(optionSeven, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        if archivosCargados():
+            cat = categorias()
+            executiontime = timeit.timeit(optionSeven, number=1)
+            print("Tiempo de ejecución: " + str(executiontime))
+        else:
+            print("Se necesita tener el analizador inicializado antes de ejecutar esta opción")
+
+    elif int(inputs[0]) == 9:
+        if archivosCargados():
+            cat = categorias()
+            executiontime = timeit.timeit(optionNine, number=1)
+            print("Tiempo de ejecución: " + str(executiontime))
+        else:
+            print("Se necesita tener el analizador inicializado antes de ejecutar esta opción")
 
     else:
         sys.exit(0)
