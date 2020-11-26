@@ -347,6 +347,9 @@ def ruta(analyzer,lst,path,vert,res):
 
 def bike(analyzer, date, id):
     bike=m.get(analyzer["bikes"],id)
+    use=None
+    parked=None
+    stations=None
     if bike !=None:
         iterator = it.newIterator(bike["value"])
         while  it.hasNext(iterator):
@@ -355,10 +358,6 @@ def bike(analyzer, date, id):
                 use=element["use"]
                 parked=element["parked"]
                 stations=element["stations"]
-    else:
-        use=None
-        parked=None
-        stations=None
     return use, parked, stations
 
 def bikeTime(starttime, endtime):
