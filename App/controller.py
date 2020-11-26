@@ -23,9 +23,11 @@
  * Dario Correal
  *
  """
+
 import config as cf
 from App import model
 import csv
+
 """
 El controlador se encarga de mediar entre la vista y el modelo.
 Existen algunas operaciones en las que se necesita invocar
@@ -131,6 +133,13 @@ def getPublicityRoute(analyzer,cat):
 
 def rutas(analyzer,id,res):
     return model.rutas(analyzer,id,res)
+
+def getStationName(analyzer,stationId):
+    """
+    Obtiene el nombre de una estacion a partir de su Id
+    """
+    name = model.getStationName(analyzer,stationId)
+    return name
 
 def totalStations(analyzer):
     """
