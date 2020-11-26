@@ -46,7 +46,6 @@ de creacion y consulta sobre las estructuras de datos.
 # -----------------------------------------------------
 #                       API
 # -----------------------------------------------------
-
 def newAnalyzer():
     """ Inicializa el analizador
    trips: Grafo para representar las rutas entre estaciones
@@ -61,13 +60,21 @@ def newAnalyzer():
                     "stations":None,
                     "popularity":None,
                     "publicity":None,
+                    "ids":None,
+                    "nameStation":None,
+                    "bikes":None,
                     "NumTrips": 0
                     }
+
         analyzer['trips'] = gr.newGraph(datastructure='ADJ_LIST',
                                   directed=True,
                                   size=1500,
                                   comparefunction=compareStations)
         analyzer["stations"] = m.newMap(1000,  
+                                   maptype='CHAINING', 
+                                   loadfactor=5, 
+                                   comparefunction=compareNameInEntry)
+        analyzer["ids"] = m.newMap(1000,  
                                    maptype='CHAINING', 
                                    loadfactor=5, 
                                    comparefunction=compareNameInEntry)
@@ -138,23 +145,23 @@ def addTrip(analyzer, trip):
     origin = trip['start station id']
     destination = trip['end station id']
     duration = int(trip['tripduration'])
+    startName = trip["start station name"]
+    endName = trip["end station name"]
     age = 2018 - int(trip["birth year"])
     subType =trip["usertype"]
-    startName=trip["start station name"]
-    endName= trip["end station name"]
     bikeId= trip["bikeid"]
     starttime= trip["starttime"]
     endtime= trip["stoptime"]
     addBikeTrip(analyzer, bikeId, duration, startName, endName, starttime, endtime)
     addNameStation(analyzer, origin, startName)
     addNameStation(analyzer, destination, endName)
-    addStation(analyzer, origin)
-    addStation(analyzer, destination)
+    addStation(analyzer, origin,startName)
+    addStation(analyzer, destination,endName)
     addConnection(analyzer, origin, destination, duration)
     addSatationInfo(analyzer, origin, destination, age, subType)
     analyzer["NumTrips"] += 1
 
-def addStation(analyzer, stationid):
+def addStation(analyzer, stationid, name):
     """
     Adiciona una estación como un vertice del grafo y como
     nueva llave al mapa
@@ -163,6 +170,7 @@ def addStation(analyzer, stationid):
             gr.insertVertex(analyzer ["trips"], stationid)
             entry = newStation(stationid)
             m.put(analyzer["stations"],stationid,entry)
+            m.put(analyzer["ids"],stationid,name)
     return analyzer
 
 def addBikeTrip(analyzer, bikeId, duration, startName, endName, starttime, endtime):
@@ -373,7 +381,7 @@ def nameStation(analyzer, id1):
         id,name = it.next(iterator)
         if id == id1:
             return name
-
+    
 def findPopulars(analyzer):
     lstVert = gr.vertices(analyzer["trips"])
     vertIterator = it.newIterator(lstVert)
@@ -493,15 +501,19 @@ def findPopularsAdd(analyzer):
             timesRoute = me.getValue(routeEntry)
             total += timesRoute
             routeTuple = (timesRoute,vert)
-            if mayTup < routeTuple:
+            mayTimes,name = mayTup
+            if mayTimes < timesRoute:
                 size = lt.size(mayCatLst)
                 if size > 1:
                     for i in range(0,size-1):
                         lt.deleteElement(mayCatLst,1)
                 lt.changeInfo(mayCatLst,1,routeTuple)
+                mayTup = routeTuple
+            elif timesRoute == mayTimes:
+                lt.addLast(mayCatLst,routeTuple)
         lt.addLast(mayCatLst,total)
     return analyzer
-
+    
 # ==============================
 # Funciones de consulta
 # ==============================
@@ -572,6 +584,15 @@ def getPublicityRoute(analyzer,cat):
     mayLst = analyzer["publicity"]["BestPublicity"]
     catLst = lt.getElement(mayLst,cat)
     return catLst
+
+def getStationName(analyzer,stationId):
+    """
+    Obtiene el nombre de una estacion a partir de su Id
+    """
+    mapNames = analyzer["ids"]
+    entry = m.get(mapNames,stationId)
+    name = me.getValue(entry)
+    return name
 
 def totalStations(analyzer):
     """
