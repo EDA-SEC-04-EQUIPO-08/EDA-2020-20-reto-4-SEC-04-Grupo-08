@@ -63,6 +63,7 @@ def newAnalyzer():
                     "ids":None,
                     "nameStation":None,
                     "bikes":None,
+                    "lstStations":lt.newList("SINGLE_LINKED", compare),
                     "NumTrips": 0
                     }
 
@@ -171,6 +172,7 @@ def addStation(analyzer, stationid, name):
             entry = newStation(stationid)
             m.put(analyzer["stations"],stationid,entry)
             m.put(analyzer["ids"],stationid,name)
+            lt.addLast(analyzer["lstStations"],stationid)
     return analyzer
 
 def addBikeTrip(analyzer, bikeId, duration, startName, endName, starttime, endtime):
@@ -382,7 +384,7 @@ def nameStation(analyzer, id1):
             return name
     
 def findPopulars(analyzer):
-    lstVert = gr.vertices(analyzer["trips"])
+    lstVert = analyzer["lstStations"]
     vertIterator = it.newIterator(lstVert)
     while it.hasNext(vertIterator):
         vert = it.next(vertIterator)
