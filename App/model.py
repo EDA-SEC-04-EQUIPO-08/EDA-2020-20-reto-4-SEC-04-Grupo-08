@@ -177,6 +177,7 @@ def addStation(analyzer, stationid, name, location):
             m.put(analyzer["stations"],stationid,entry)
             m.put(analyzer["ids"],stationid,name)
             lt.addLast(analyzer["lstStations"],stationid)
+            lt.addLast(analyzer["locations"],[stationid, location])
     return analyzer
 
 def addBikeTrip(analyzer, bikeId, duration, startName, endName, starttime, endtime):
@@ -522,6 +523,36 @@ def findPopularsAdd(analyzer):
 # ==============================
 # Funciones de consulta
 # ==============================
+def getCircularRoute(analyzer, stationId):
+    lista2=[]
+    listaCamino=[]
+    listaFinal=[]
+    adjacents=gr.adjacents(analyzer["trips"],stationId)
+    estructura=scc.KosarajuSCC(analyzer['trips'])
+    iterator=it.newIterator(adjacents)
+    while it.hasNext(iterator):
+        element=it.next(iterator)
+        if scc.stronglyConnected(estructura,stationId,element):
+            lista2.append(element)
+    for i in lista2:
+        x=[stationId]
+        nuevaEstructura=dfs.DepthFirstSearch(analyzer["trips"],i)
+        camino=dfs.pathTo(nuevaEstructura,stationId)
+        getPathNextStations(x,camino["first"])
+        x.append(stationId)
+        listaCamino.append(x)
+    for j in range(0,len(listaCamino)-1):
+        listaFinal.append(getStationToStation(listaCamino[j],analyzer["trips"]))
+    return listaFinal
+def getStationToStation (lista, analyzer):
+    listiña=[]
+    total=0
+    for i in range(1,len(lista)):
+        x={"station1":lista[i-1], "station2":lista[i], "time": gr.getEdge(analyzer,lista[i-1],lista[i])["weight"]}
+        total+=x["time"]
+        listiña.append(x)
+    total+=(len(lista)-2)*20
+    return {"lista":listiña,"total":total}
 
 def connectedComponents(analyzer):
     """
@@ -657,13 +688,22 @@ def getShortestCoordinate (analyzer,startLat, startLon, endLat, endLon):
     suma=0
     estacionCercanaInicio=getCloserStation(analyzer,startLat,startLon)
     estacionCercanaFinal=getCloserStation(analyzer,endLat,endLon)
-    estructura=dfs.DepthFirstSearch(analyzer["trips"], estacionCercanaInicio)
-    if dfs.hasPathTo(estructura, estacionCercanaFinal):
-        camino=dfs.pathTo(estructura,estacionCercanaFinal)
+    estructura1=dfs.DepthFirstSearch(analyzer["trips"], estacionCercanaInicio)
+    estructura2=dfs.DepthFirstSearch(analyzer["trips"], estacionCercanaFinal)
+
+    if dfs.hasPathTo(estructura1, estacionCercanaFinal):
+        camino=dfs.pathTo(estructura1,estacionCercanaFinal)
         getPathNextStations(lista,camino["first"])
         lista.append(camino["last"]["info"])
         for i in range(1,len(lista)):
             suma+=gr.getEdge(analyzer["trips"],lista[i-1],lista[i])["weight"]
+    elif dfs.hasPathTo(estructura2, estacionCercanaInicio):
+        camino=dfs.pathTo(estructura1,estacionCercanaInicio)
+        getPathNextStations(lista,camino["first"])
+        lista.append(camino["last"]["info"])
+        for i in range(1,len(lista)):
+            suma+=gr.getEdge(analyzer["trips"],lista[i-1],lista[i])["weight"]
+        lista=reverseList(lista)
     else:
         suma=-1
     return (lista,suma)
@@ -685,7 +725,7 @@ def convertQueueToStr(queue):
     strRoute = strRoute + stat['vertexB']
     return strRoute
    
- def getPathNextStations (lista, estructura):
+def getPathNextStations (lista, estructura):
     """
     Añade el info de los elementos del path a una lista de python 
     """
@@ -694,6 +734,12 @@ def convertQueueToStr(queue):
         getPathNextStations(lista, estructura["next"])
     else:
         return None
+
+def reverseList (lista):
+    listaNueva=[]
+    for i in range(1,len(lista)+1):
+        listaNueva.append(lista[-i])
+    return lista
 
 # ==============================
 # Funciones de Comparacion
