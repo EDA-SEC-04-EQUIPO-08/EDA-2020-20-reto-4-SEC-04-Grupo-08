@@ -47,7 +47,7 @@ file2 = '201801-2-citibike-tripdata.csv'
 file3 = '201801-3-citibike-tripdata.csv'
 file4 = '201801-4-citibike-tripdata.csv'
 #Archivos que se van a cargar
-totalFiles = [file1,file2]
+totalFiles = [file1]
 
 # ___________________________________________________
 #  Menu principal
@@ -326,7 +326,7 @@ while True:
     elif int(inputs) == 10:
         if archivosCargados() and datos:
             id=input("Ingrese el id de la bicicleta: ")
-            date=input("Ingrese la fecha, en el formato (AA-MM-DD), que desea consular: ")
+            date=input("Ingrese la fecha, en el formato (AAAA-MM-DD), que desea consular: ")
             executiontime = timeit.timeit(optionTen, number=1)
             print("Tiempo de ejecución: " + str(executiontime))
         else:
