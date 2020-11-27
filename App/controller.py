@@ -174,3 +174,12 @@ def bike(analyzer, date, id):
     y la lista de las estaciones por las que ha pasado
     """
     return model.bike(analyzer,date,id)
+
+def getShortestCoordinate (analyzer,startLat, startLon, endLat, endLon):
+    """
+    Devuelve la ruta entre una coordenada origen y una final
+    """
+    estacionOrigen=model.getCloserStation (analyzer, startLat, startLon)
+    estacionDestino=model.getCloserStation (analyzer, endLat, endLon)
+    ruta,tiempo=model.getShortestCoordinate(analyzer,startLat, startLon, endLat, endLon)
+    return (estacionOrigen,estacionDestino,ruta,tiempo)
