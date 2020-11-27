@@ -183,3 +183,14 @@ def getShortestCoordinate (analyzer,startLat, startLon, endLat, endLon):
     estacionDestino=model.getCloserStation (analyzer, endLat, endLon)
     ruta,tiempo=model.getShortestCoordinate(analyzer,startLat, startLon, endLat, endLon)
     return (estacionOrigen,estacionDestino,ruta,tiempo)
+ 
+def getCircularRoute(analyzer, stationId, minTime, maxTime):
+    """
+    Devuelve las rutas circulares encontradas en el tiempo disponible
+    """
+    rutas=[]
+    ruta=model.getCircularRoute(analyzer, stationId)
+    for i in ruta:
+        if i["total"]>minTime and i["total"]<maxTime:
+            rutas.append(i["lista"])
+    return rutas
