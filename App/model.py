@@ -64,6 +64,7 @@ def newAnalyzer():
                     "nameStation":None,
                     "bikes":None,
                     "lstStations":lt.newList("SINGLE_LINKED", compare),
+                    "locations":None,
                     "NumTrips": 0
                     }
 
@@ -94,6 +95,7 @@ def newAnalyzer():
                                    maptype='CHAINING', 
                                    loadfactor=5, 
                                    comparefunction=compareNameInEntry)
+        analyzer["locations"] = lt.newList("ARRAY_LIST", compareStations)
         popularity = analyzer['popularity']
         publicity = analyzer["publicity"]
         createAges(popularity["ByAges"])
@@ -153,16 +155,18 @@ def addTrip(analyzer, trip):
     bikeId= trip["bikeid"]
     starttime= trip["starttime"]
     endtime= trip["stoptime"]
+    startLocation = [float(trip["start station latitude"]),float(trip["start station longitude"])]
+    endLocation = [float(trip["end station latitude"]),float(trip["end station longitude"])]
     addBikeTrip(analyzer, bikeId, duration, startName, endName, starttime, endtime)
     addNameStation(analyzer, origin, startName)
     addNameStation(analyzer, destination, endName)
-    addStation(analyzer, origin,startName)
-    addStation(analyzer, destination,endName)
+    addStation(analyzer, origin,startName,startLocation)
+    addStation(analyzer, destination,endName,endLocation)
     addConnection(analyzer, origin, destination, duration)
     addSatationInfo(analyzer, origin, destination, age, subType)
     analyzer["NumTrips"] += 1
 
-def addStation(analyzer, stationid, name):
+def addStation(analyzer, stationid, name, location):
     """
     Adiciona una estación como un vertice del grafo y como
     nueva llave al mapa
@@ -625,6 +629,44 @@ def lstSize(lst):
     Retorna el tamaño de una lista
     """
     return lt.size(lst)
+  
+def getCloserStation (analyzer, latitude, longitude):
+
+    """
+    Devuelve la estación más cercana a una coordenada dada
+    """
+    latitude=float(latitude)
+    longitude=float(longitude)
+    estacionMenor=""
+    distanciaMenor=999**9
+    lista=analyzer.get("locations")
+    iterator=it.newIterator(lista)
+    while it.hasNext(iterator):
+        element=it.next(iterator)
+        x=(((float(element[1][0])-float(latitude))**2)+(((float(element[1][1]-float(longitude))**2)**(1/2))))
+        if x<distanciaMenor:
+            distanciaMenor=x
+            estacionMenor=element[0]
+    return estacionMenor
+
+def getShortestCoordinate (analyzer,startLat, startLon, endLat, endLon):
+    """
+    Devuelve la ruta entre una coordenada origen y una final
+    """
+    lista=[]
+    suma=0
+    estacionCercanaInicio=getCloserStation(analyzer,startLat,startLon)
+    estacionCercanaFinal=getCloserStation(analyzer,endLat,endLon)
+    estructura=dfs.DepthFirstSearch(analyzer["trips"], estacionCercanaInicio)
+    if dfs.hasPathTo(estructura, estacionCercanaFinal):
+        camino=dfs.pathTo(estructura,estacionCercanaFinal)
+        getPathNextStations(lista,camino["first"])
+        lista.append(camino["last"]["info"])
+        for i in range(1,len(lista)):
+            suma+=gr.getEdge(analyzer["trips"],lista[i-1],lista[i])["weight"]
+    else:
+        suma=-1
+    return (lista,suma)
 
 # ==============================
 # Funciones Helper
@@ -642,6 +684,16 @@ def convertQueueToStr(queue):
         strRoute = strRoute + str(stat['vertexA'])+ " - "
     strRoute = strRoute + stat['vertexB']
     return strRoute
+   
+ def getPathNextStations (lista, estructura):
+    """
+    Añade el info de los elementos del path a una lista de python 
+    """
+    if estructura["next"] is not None:
+        lista.append(estructura["info"])
+        getPathNextStations(lista, estructura["next"])
+    else:
+        return None
 
 # ==============================
 # Funciones de Comparacion
