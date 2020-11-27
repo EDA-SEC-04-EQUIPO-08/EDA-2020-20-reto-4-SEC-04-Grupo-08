@@ -206,7 +206,7 @@ def optionEight():
         if tiempo!=-1:
             print ("Su estación más cercana es: "+controller.getStationName(analyzer,estacionOrigen))
             print ("La estación más cercana a su destino es: "+controller.getStationName(analyzer,estacionDestino))
-            print ("Las estaciones en el intermedio son: ")
+            print ("Las estaciones a recorrer son: ")
             for i in ruta:
                 print(controller.getStationName(analyzer,i))
             print ("El tiempo estimado de viaje son: "+str(tiempo)+" minutos.")
