@@ -98,7 +98,22 @@ def optionThree():
         print("Hubo un error en la busqueda")
 
 def optionFour():
-    pass
+    try:
+        contador=1
+        ruta=controller.getCircularRoute(analyzer, stationId, minTime, maxTime)
+        print ("\n")
+        print("La cantidad de rutas circulares disponibles en su tiempo conveniente son: "+str(len(ruta)))
+        for i in ruta:
+            print ("Ruta #"+str(contador)+":")
+            print ("\n")
+            for j in i:
+                print ("Estación Origen: "+controller.getStationName(analyzer,j["station1"]))
+                print ("Estación Destino: "+controller.getStationName(analyzer,j["station2"]))
+                print ("Duración estimada: "+str(round(j["time"])+" minutos"))
+                print ("\n")
+            contador+=1
+    except:
+        print("Hubo un error en la busqueda")
 
 def optionFive():
     try:
@@ -300,6 +315,9 @@ while True:
             print("Se necesita tener el analizador inicializado y con datos antes de ejecutar esta opción")
 
     elif int(inputs[0]) == 4:
+        stationId=input("Ingrese su estación de Origen: ")
+        minTime=float(input("Ingrese la cantidad mínima de tiempo de la que dispone: "))
+        maxTime=float(input("Ingrese la cantidad máxima de tiempo de la que dispone: "))
         executiontime = timeit.timeit(optionFour, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
