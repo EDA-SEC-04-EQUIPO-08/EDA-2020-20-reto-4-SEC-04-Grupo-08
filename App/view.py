@@ -186,7 +186,19 @@ def optionSeven():
         print("Hubo un error en la busqueda")
     
 def optionEight():
-    pass
+    try:
+        estacionOrigen,estacionDestino,ruta,tiempo=controller.getShortestCoordinate(analyzer,startLat, startLon, endLat, endLon)
+        if tiempo!=-1:
+            print ("Su estación más cercana es: "+controller.getStationName(analyzer,estacionOrigen))
+            print ("La estación más cercana a su destino es: "+controller.getStationName(analyzer,estacionDestino))
+            print ("Las estaciones en el intermedio son: ")
+            for i in ruta:
+                print(controller.getStationName(analyzer,i))
+            print ("El tiempo estimado de viaje son: "+str(tiempo)+" minutos.")
+        else:
+            print ("Las coordenadas de destino no tienen rutas disponibles hacia su ubicación.")
+    except:
+        print ("Hubo un error en la búsqueda.")
 
 def optionNine():
     try:
@@ -314,7 +326,16 @@ while True:
             print("Tiempo de ejecución: " + str(executiontime))
         else:
             print("Se necesita tener el analizador inicializado y con datos antes de ejecutar esta opción")
-
+    elif int(inputs[0]) == 8:
+        if archivosCargados() and datos:
+            startLat=float(input("Ingrese la Latitud de origen: "))
+            startLon=float(input("Ingrese la longitud de origen: "))
+            endLat=float(input("Ingrese la Latitud de destino: "))
+            endLon=float(input("Ingrese la longitud de destino: "))
+            executiontime = timeit.timeit(optionEight, number=1)
+            print("Tiempo de ejecución: " + str(executiontime))
+        else:
+            print("Se necesita tener el analizador inicializado y con datos antes de ejecutar esta opción")
     elif int(inputs[0]) == 9:
         if archivosCargados() and datos:
             cat = categorias()
