@@ -109,7 +109,7 @@ def optionFour():
             for j in i:
                 print ("Estación Origen: "+controller.getStationName(analyzer,j["station1"]))
                 print ("Estación Destino: "+controller.getStationName(analyzer,j["station2"]))
-                print ("Duración estimada: "+str(round(j["time"])+" minutos"))
+                print ("Duración estimada: "+str(round(j["time"]))+" minutos")
                 print ("\n")
             contador+=1
     except:
