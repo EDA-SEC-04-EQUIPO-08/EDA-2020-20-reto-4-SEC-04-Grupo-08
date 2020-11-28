@@ -191,6 +191,7 @@ def getCircularRoute(analyzer, stationId, minTime, maxTime):
     rutas=[]
     ruta=model.getCircularRoute(analyzer, stationId)
     for i in ruta:
-        if i["total"]>minTime and i["total"]<maxTime:
+        if i["total"]>minTime and i["total"]<maxTime and len(i["lista"])>1:
             rutas.append(i["lista"])
+        
     return rutas
