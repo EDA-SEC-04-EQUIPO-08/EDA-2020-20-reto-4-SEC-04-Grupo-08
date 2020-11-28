@@ -680,14 +680,12 @@ def getCloserStation (analyzer, latitude, longitude):
             estacionMenor=element[0]
     return estacionMenor
 
-def getShortestCoordinate (analyzer,startLat, startLon, endLat, endLon):
+def getShortestCoordinate (analyzer,estacionCercanaInicio,estacionCercanaFinal):
     """
     Devuelve la ruta entre una coordenada origen y una final
     """
     lista=[]
     suma=0
-    estacionCercanaInicio=getCloserStation(analyzer,startLat,startLon)
-    estacionCercanaFinal=getCloserStation(analyzer,endLat,endLon)
     estructura1=dfs.DepthFirstSearch(analyzer["trips"], estacionCercanaInicio)
     estructura2=dfs.DepthFirstSearch(analyzer["trips"], estacionCercanaFinal)
 
